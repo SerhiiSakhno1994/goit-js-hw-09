@@ -15,10 +15,14 @@ const refs = {
   seconds: document.querySelector('span[data-seconds]'),
 };
 
+disableStartBtn();
 
 
+refs.input.addEventListener('click', flatpickr);
+refs.start.addEventListener('click', countDown);
 
-let stopTime = 0;
+
+let stopTime = null;
 
 const options = {
   enableTime: true,
@@ -26,37 +30,37 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-      console.log(selectedDates[0]);
-       const date = new Date();
-    stopTime = selectedDates[0].getTime();
+        console.log(selectedDates[0]);
+    const date = new Date();
     if (selectedDates[0] < date) {
-    //   window.alert('введите дату которая еще не прошла');
-        Notiflix.Report.warning('ВНИМАНИЕ!!!!', 'введите дату которая еще не прошла', 'закрыть');
+      Notiflix.Report.warning('ATTENTION!!!!', 'Please choose a date in the future', 'close');
+      return disableStartBtn();
     }
+    refs.start.removeAttribute('disabled');
+    stopTime = selectedDates[0].getTime();
   },
 };
 
 
 flatpickr(refs.input, options);
 
-refs.start.addEventListener('click', countDown);
 
-function countDown () { 
-let intervalId = null;
-  disableStartBtn()
+
+function countDown() {
+  const intervalId = null;
   intervalId = setInterval(startTimer, 1000);
   function startTimer() {
-    const currentDate = Date.now();
-    const deltaTime = stopTime - currentDate;
-    console.log(deltaTime);
-    if (deltaTime < 1000) {
-      clearInterval(intervalId);
-    }
+    const currentTime = Date.now();
+    const deltaTime = stopTime - currentTime;
 
-    const timeUpDate = convertMs(deltaTime);
-    updateClock(timeUpDate);
+    disableStartBtn();
+    if (deltaTime > 0) {
+      const timeUpDate = convertMs(deltaTime);
+      updateClock(timeUpDate);
+      clearInterval(intervalId);
+    };
   }
-};
+}
 
 function updateClock({ days, hours, minutes, seconds }) {
   refs.days.textContent = days;
