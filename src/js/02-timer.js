@@ -47,7 +47,7 @@ flatpickr(refs.input, options);
 
 
 function countDown() {
-  const intervalId = null;
+  let intervalId = null;
   intervalId = setInterval(startTimer, 1000);
   function startTimer() {
     const currentTime = Date.now();
@@ -57,8 +57,10 @@ function countDown() {
     if (deltaTime > 0) {
       const timeUpDate = convertMs(deltaTime);
       updateClock(timeUpDate);
+      
+    } else {
       clearInterval(intervalId);
-    };
+    }
   }
 }
 
